@@ -1,0 +1,45 @@
+# Name of the workflow that appears in the GitHub Actions tab
+name: Run Unit Tests
+
+# Trigger conditions: run this workflow on push or pull request events to main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Define the jobs that this workflow will run
+jobs:
+  # Job name: test
+  test:
+    # Use the latest Ubuntu runner provided by GitHub
+    runs-on: ubuntu-latest
+    
+    # Steps are executed sequentially within the job
+    steps:
+      # Step 1: Check out the repository code
+      # This action clones your repo so the workflow can access it
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # Step 2: Set up Python environment
+      # Install Python 3.11 on the runner
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      # Step 3: Install project dependencies
+      # Upgrade pip and install all packages from requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      # Step 4: Run tests with pytest
+      # pytest will exit with code 1 if any test fails, causing the workflow to fail
+      # This ensures a ✅ (pass) or ❌ (fail) status appears on your commits
+      - name: Run tests
+        run: pytest
